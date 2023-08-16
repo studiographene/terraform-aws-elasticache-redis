@@ -2,27 +2,8 @@
 # Security Group Resources
 #
 locals {
-  enabled = module.this.enabled
-
-  legacy_egress_rule = local.use_legacy_egress ? {
-    key         = "legacy-egress"
-    type        = "egress"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = var.egress_cidr_blocks
-    description = "Allow outbound traffic to existing CIDR blocks"
-  } : null
-
-  legacy_cidr_ingress_rule = length(var.allowed_cidr_blocks) == 0 ? null : {
-    key         = "legacy-cidr-ingress"
-    type        = "ingress"
-    from_port   = var.port
-    to_port     = var.port
-    protocol    = "tcp"
-    cidr_blocks = var.allowed_cidr_blocks
-    description = "Allow inbound traffic from CIDR blocks"
-  }
+  enabled               = module.this.enabled
+  create_security_group = local.enabled && var.create_security_group
 
   sg_rules = {
     legacy = merge(local.legacy_egress_rule, local.legacy_cidr_ingress_rule),
@@ -36,12 +17,12 @@ module "aws_security_group" {
 
   enabled = local.create_security_group
 
-  allow_all_egress    = local.allow_all_egress
+  allow_all_egress    = var.allow_all_egress
   security_group_name = var.security_group_name
   rules_map           = local.sg_rules
   rule_matrix = [{
     key                       = "in"
-    source_security_group_ids = local.allowed_security_group_ids
+    source_security_group_ids = var.allowed_security_group_ids
     cidr_blocks               = var.allowed_cidr_blocks
     rules = [{
       key         = "in"
@@ -53,12 +34,9 @@ module "aws_security_group" {
     }]
   }]
 
-  vpc_id = var.vpc_id
-
-  security_group_description = local.security_group_description
-
-  create_before_destroy = var.security_group_create_before_destroy
-
+  vpc_id                        = var.vpc_id
+  security_group_description    = var.security_group_description
+  create_before_destroy         = var.security_group_create_before_destroy
   security_group_create_timeout = var.security_group_create_timeout
   security_group_delete_timeout = var.security_group_delete_timeout
 
@@ -77,11 +55,11 @@ locals {
     var.cluster_size
   )
 
-  elasticache_member_clusters = module.this.enabled ? tolist(aws_elasticache_replication_group.default[0].member_clusters) : []
+  elasticache_member_clusters = local.enabled ? tolist(aws_elasticache_replication_group.default[0].member_clusters) : []
 }
 
 resource "aws_elasticache_subnet_group" "default" {
-  count       = module.this.enabled && var.elasticache_subnet_group_name == "" && length(var.subnets) > 0 ? 1 : 0
+  count       = local.enabled && var.elasticache_subnet_group_name == "" && length(var.subnets) > 0 ? 1 : 0
   name        = module.this.id
   description = "Elasticache subnet group for ${module.this.id}"
   subnet_ids  = var.subnets
@@ -89,7 +67,7 @@ resource "aws_elasticache_subnet_group" "default" {
 }
 
 resource "aws_elasticache_parameter_group" "default" {
-  count       = module.this.enabled ? 1 : 0
+  count       = local.enabled ? 1 : 0
   name        = module.this.id
   description = var.parameter_group_description != null ? var.parameter_group_description : "Elasticache parameter group for ${module.this.id}"
   family      = var.family
@@ -113,7 +91,7 @@ resource "aws_elasticache_parameter_group" "default" {
 }
 
 resource "aws_elasticache_replication_group" "default" {
-  count = module.this.enabled ? 1 : 0
+  count = local.enabled ? 1 : 0
 
   auth_token                  = var.transit_encryption_enabled ? var.auth_token : null
   replication_group_id        = var.replication_group_id == "" ? module.this.id : var.replication_group_id
@@ -129,7 +107,7 @@ resource "aws_elasticache_replication_group" "default" {
   # It would be nice to remove null or duplicate security group IDs, if there are any, using `compact`,
   # but that causes problems, and having duplicates does not seem to cause problems.
   # See https://github.com/hashicorp/terraform/issues/29799
-  security_group_ids         = local.create_security_group ? concat(local.associated_security_group_ids, [module.aws_security_group.id]) : local.associated_security_group_ids
+  security_group_ids         = local.create_security_group ? concat(var.associated_security_group_ids, [module.aws_security_group.id]) : var.associated_security_group_ids
   maintenance_window         = var.maintenance_window
   notification_topic_arn     = var.notification_topic_arn
   engine_version             = var.engine_version
@@ -167,7 +145,7 @@ resource "aws_elasticache_replication_group" "default" {
 # CloudWatch Resources
 #
 resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
-  count               = module.this.enabled && var.cloudwatch_metric_alarms_enabled ? local.member_clusters_count : 0
+  count               = local.enabled && var.cloudwatch_metric_alarms_enabled ? local.member_clusters_count : 0
   alarm_name          = "${element(local.elasticache_member_clusters, count.index)}-cpu-utilization"
   alarm_description   = "Redis cluster CPU utilization"
   comparison_operator = "GreaterThanThreshold"
@@ -191,7 +169,7 @@ resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "cache_memory" {
-  count               = module.this.enabled && var.cloudwatch_metric_alarms_enabled ? local.member_clusters_count : 0
+  count               = local.enabled && var.cloudwatch_metric_alarms_enabled ? local.member_clusters_count : 0
   alarm_name          = "${element(local.elasticache_member_clusters, count.index)}-freeable-memory"
   alarm_description   = "Redis cluster freeable memory"
   comparison_operator = "LessThanThreshold"
@@ -218,7 +196,7 @@ module "dns" {
   source  = "cloudposse/route53-cluster-hostname/aws"
   version = "0.12.2"
 
-  enabled  = module.this.enabled && length(var.zone_id) > 0 ? true : false
+  enabled  = local.enabled && length(var.zone_id) > 0 ? true : false
   dns_name = var.dns_subdomain != "" ? var.dns_subdomain : module.this.id
   ttl      = 60
   zone_id  = try(var.zone_id[0], tostring(var.zone_id), "")
