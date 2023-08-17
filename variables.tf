@@ -33,11 +33,11 @@ variable "allowed_security_group_ids" {
 }
 
 variable "security_group_name" {
-  type        = list(string)
-  default     = []
+  type        = string
+  default     = null
   description = <<-EOT
     The name to assign to the created security group. Must be unique within the VPC.
-    If not provided, will be derived from the `null-label.context` passed in.
+    If not provided, default value of '<module.this.id>-elasticache-redis' is set.
     If `create_before_destroy` is true, will be used as a name prefix.
     EOT
 }
