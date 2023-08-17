@@ -10,7 +10,7 @@ module "aws_security_group" {
   enabled = local.create_security_group
 
   allow_all_egress    = var.allow_all_egress
-  security_group_name = var.security_group_name
+  security_group_name = [var.security_group_name]
   rules_map = {
     extra = var.additional_security_group_rules
   }
