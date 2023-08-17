@@ -14,19 +14,6 @@ module "aws_security_group" {
   rules_map = {
     extra = var.additional_security_group_rules
   }
-  rule_matrix = [{
-    key                       = "in"
-    source_security_group_ids = var.allowed_security_group_ids
-    cidr_blocks               = var.allowed_cidr_blocks
-    rules = [{
-      key         = "in"
-      type        = "ingress"
-      from_port   = var.port
-      to_port     = var.port
-      protocol    = "tcp"
-      description = "Selectively allow inbound traffic"
-    }]
-  }]
 
   vpc_id                        = var.vpc_id
   security_group_description    = var.security_group_description
