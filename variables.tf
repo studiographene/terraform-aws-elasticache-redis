@@ -80,7 +80,7 @@ variable "security_group_delete_timeout" {
 
 variable "allow_all_egress" {
   type        = bool
-  default     = null
+  default     = true
   description = <<-EOT
     If `true`, the created security group will allow egress on all ports and protocols to all IP address.
     If this is false and no egress rules are otherwise specified, then no egress will be allowed.
