@@ -66,7 +66,7 @@ resource "aws_elasticache_replication_group" "default" {
   # but that causes problems, and having duplicates does not seem to cause problems.
   # See https://github.com/hashicorp/terraform/issues/29799
   security_group_ids = compact(
-    concat(var.additional_security_groups, [aws_security_group.redis.id]),
+    concat(var.redis_additional_security_groups, [aws_security_group.redis.id]),
   )
   maintenance_window         = var.maintenance_window
   notification_topic_arn     = var.notification_topic_arn
