@@ -15,7 +15,7 @@ resource "aws_security_group" "redis" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    description     = "Allow ECS and serverless SGs access to Redis"
+    description     = "Allow SGs and cidr to access Redis"
     from_port       = 6379
     to_port         = 6379
     protocol        = "TCP"
