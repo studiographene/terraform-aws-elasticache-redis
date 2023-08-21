@@ -1,3 +1,8 @@
+locals {
+  enabled                     = module.this.enabled
+  create_redis_security_group = local.enabled && var.create_redis_security_group
+}
+
 
 resource "aws_security_group" "redis" {
   name        = "${module.this.id}-redis-sg"

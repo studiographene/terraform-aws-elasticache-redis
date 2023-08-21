@@ -15,6 +15,12 @@ variable "redis_ingress_cidr_blocks" {
   default     = []
 }
 
+variable "create_redis_security_group" {
+  description = "Weather or not to create a security group for redis"
+  type        = bool
+  default     = true
+}
+
 variable "redis_additional_security_groups" {
   description = "A list of security group IDs to assign to the Redis."
   type        = list(string)
