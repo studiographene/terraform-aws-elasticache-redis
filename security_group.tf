@@ -14,22 +14,20 @@ resource "aws_security_group" "redis" {
     to_port     = 0
     cidr_blocks = ["0.0.0.0/0"]
   }
+  ingress {
+    description     = "Allow ECS and serverless SGs access to Redis"
+    from_port       = 6379
+    to_port         = 6379
+    protocol        = "TCP"
+    cidr_blocks     = var.redis_ingress_cidr_blocks
+    security_groups = var.redis_additional_security_groups
+
+  }
   tags = merge(
     module.this.tags,
     {
       Name = "${module.this.id}-redis-sg"
     },
   )
-}
-
-resource "aws_security_group_rule" "ingress_redis" {
-
-  security_group_id = aws_security_group.redis.id
-  type              = "ingress"
-  from_port         = 6379
-  to_port           = 6379
-  protocol          = "tcp"
-  cidr_blocks       = var.redis_ingress_cidr_blocks
-  security_groups   = var.redis_additional_security_groups
 }
 
