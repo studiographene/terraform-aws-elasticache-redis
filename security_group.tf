@@ -30,5 +30,6 @@ resource "aws_security_group_rule" "ingress_redis" {
   to_port           = 6379
   protocol          = "tcp"
   cidr_blocks       = var.redis_ingress_cidr_blocks
+  secuirty_group    = var.redis_additional_security_groups
 }
 
