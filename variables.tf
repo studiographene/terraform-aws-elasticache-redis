@@ -15,7 +15,7 @@ variable "ingress_cidr_blocks" {
   default     = []
 }
 
-variable "additional_security_groups" {
+variable "allowed_security_groups" {
   description = "A list of security group IDs to assign to the Redis."
   type        = list(string)
   default     = []

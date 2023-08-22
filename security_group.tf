@@ -1,7 +1,3 @@
-locals {
-  enabled = module.this.enabled
-}
-
 
 resource "aws_security_group" "redis" {
   name        = "${module.this.id}-redis-sg"
@@ -19,7 +15,7 @@ resource "aws_security_group" "redis" {
     to_port         = var.port
     protocol        = "TCP"
     cidr_blocks     = var.ingress_cidr_blocks
-    security_groups = var.additional_security_groups
+    security_groups = var.allowed_security_groups
 
   }
   tags = merge(
