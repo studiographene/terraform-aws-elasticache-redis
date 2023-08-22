@@ -9,12 +9,6 @@ variable "subnets" {
   default     = []
 }
 
-variable "port" {
-  description = "port no for redis ingress"
-  type        = number
-  default     = 6379
-}
-
 variable "ingress_cidr_blocks" {
   description = "List of IPv4 CIDR ranges to use on all ingress rules"
   type        = list(string)
