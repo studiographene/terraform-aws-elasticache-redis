@@ -9,19 +9,19 @@ variable "subnets" {
   default     = []
 }
 
-variable "redis_ingress_cidr_blocks" {
+variable "port" {
+  description = "port no for redis ingress"
+  type        = number
+  default     = 6379
+}
+
+variable "ingress_cidr_blocks" {
   description = "List of IPv4 CIDR ranges to use on all ingress rules"
   type        = list(string)
   default     = []
 }
 
-variable "create_redis_security_group" {
-  description = "Weather or not to create a security group for redis"
-  type        = bool
-  default     = true
-}
-
-variable "redis_additional_security_groups" {
+variable "additional_security_groups" {
   description = "A list of security group IDs to assign to the Redis."
   type        = list(string)
   default     = []

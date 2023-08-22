@@ -1,6 +1,5 @@
 locals {
-  enabled                     = module.this.enabled
-  create_redis_security_group = local.enabled && var.create_redis_security_group
+  enabled = module.this.enabled
 }
 
 
@@ -16,11 +15,11 @@ resource "aws_security_group" "redis" {
   }
   ingress {
     description     = "Allow SGs and cidr to access Redis"
-    from_port       = 6379
-    to_port         = 6379
+    from_port       = var.port
+    to_port         = var.port
     protocol        = "TCP"
-    cidr_blocks     = var.redis_ingress_cidr_blocks
-    security_groups = var.redis_additional_security_groups
+    cidr_blocks     = var.ingress_cidr_blocks
+    security_groups = var.additional_security_groups
 
   }
   tags = merge(
