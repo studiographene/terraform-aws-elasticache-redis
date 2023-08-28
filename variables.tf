@@ -10,17 +10,16 @@ variable "subnets" {
 }
 
 variable "ingress_cidr_blocks" {
-  description = "List of IPv4 CIDR ranges to use on all ingress rules"
+  description = "List of IPv4 CIDR ranges to allow in security group ingress."
   type        = list(string)
   default     = []
 }
 
 variable "allowed_security_groups" {
-  description = "A list of security group IDs to assign to the Redis."
+  description = "List of security group IDs to allow in security group ingress."
   type        = list(string)
   default     = []
 }
-
 variable "elasticache_subnet_group_name" {
   type        = string
   description = "Subnet group name for the ElastiCache instance"
