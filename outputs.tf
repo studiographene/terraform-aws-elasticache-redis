@@ -4,12 +4,12 @@ output "id" {
 }
 
 output "security_group_id" {
-  value       = module.aws_security_group.id
+  value       = aws_security_group.redis.id
   description = "The ID of the created security group"
 }
 
 output "security_group_name" {
-  value       = module.aws_security_group.name
+  value       = aws_security_group.redis.name
   description = "The name of the created security group"
 }
 
