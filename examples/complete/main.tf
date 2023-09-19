@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 module "vpc" {
-  source  = "cloudposse/vpc/aws"
+  source  = "app.terraform.io/studiographene/sg-label/vpc/aws"
   version = "2.1.0"
 
   ipv4_primary_cidr_block = "172.16.0.0/16"
@@ -12,7 +12,7 @@ module "vpc" {
 }
 
 module "subnets" {
-  source  = "cloudposse/dynamic-subnets/aws"
+  source  = "app.terraform.io/studiographene/sg-label/dynamic-subnets/aws"
   version = "2.3.0"
 
   availability_zones   = var.availability_zones
@@ -35,7 +35,7 @@ resource "aws_route53_zone" "private" {
 }
 
 module "cloudwatch_logs" {
-  source  = "cloudposse/cloudwatch-logs/aws"
+  source  = "app.terraform.io/studiographene/sg-label/cloudwatch-logs/aws"
   version = "0.6.5"
 
   context = module.this.context

@@ -47,7 +47,6 @@ related:
     description: "Terraform module designed to generate consistent names and tags for resources. Use terraform-null-label to implement a strict naming convention."
     url: "https://github.com/cloudposse/terraform-null-label"
 
-
 # Short description of this project
 description: |-
   Terraform module to provision an [`ElastiCache`](https://aws.amazon.com/elasticache/) Redis Cluster
@@ -88,7 +87,7 @@ usage: |-
   }
 
   module "this" {
-    source  = "cloudposse/label/null"
+    source  = "app.terraform.io/studiographene/sg-label/null"
     # Cloud Posse recommends pinning every module to a specific version
     # version = "x.x.x"
     namespace  = var.namespace
