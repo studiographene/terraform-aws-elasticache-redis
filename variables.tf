@@ -20,6 +20,13 @@ variable "allowed_security_groups" {
   type        = list(string)
   default     = []
 }
+
+variable "intra_security_group_traffic_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether to allow traffic between resources inside the database's security group."
+}
+
 variable "elasticache_subnet_group_name" {
   type        = string
   description = "Subnet group name for the ElastiCache instance"
